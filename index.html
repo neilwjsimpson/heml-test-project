@@ -3,90 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alphabet Stock Tracker</title>
+  <title>S&P 500 Stock Tracker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Alphabet Stock Tracker</h1>
-    <p class="subtitle">GOOGL &middot; GOOG &middot; NASDAQ</p>
+    <h1>S&P 500 Stock Tracker</h1>
+    <p class="subtitle">Track all 500+ constituents of the S&P 500 index</p>
   </header>
 
   <main>
-    <section class="info-cards">
-      <div class="card">
-        <h3>GOOGL</h3>
-        <p class="label">Class A (Voting)</p>
-        <div class="widget-container">
-          <div class="tradingview-widget-container" id="widget-googl">
-            <div class="tradingview-widget-container__widget"></div>
-          </div>
-        </div>
+    <section class="controls">
+      <div class="search-container">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-box"
+          placeholder="Search by company name or ticker symbol..."
+        >
       </div>
-      <div class="card">
-        <h3>GOOG</h3>
-        <p class="label">Class C (Non-Voting)</p>
-        <div class="widget-container">
-          <div class="tradingview-widget-container" id="widget-goog">
-            <div class="tradingview-widget-container__widget"></div>
-          </div>
-        </div>
+      <div class="filter-container">
+        <select id="sectorFilter" class="filter-select">
+          <option value="">All Sectors</option>
+        </select>
+      </div>
+      <div class="results-info">
+        <p id="resultsCount">Loading companies...</p>
       </div>
     </section>
 
-    <section class="chart-section">
-      <h2>GOOGL Price Chart</h2>
-      <div class="chart-container" id="chart-widget">
-        <div class="tradingview-widget-container__widget"></div>
-      </div>
-    </section>
-
-    <section class="fundamentals">
-      <h2>Company Overview</h2>
-      <div class="fundamentals-grid">
-        <div class="stat">
-          <span class="stat-label">Sector</span>
-          <span class="stat-value">Technology</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Industry</span>
-          <span class="stat-value">Internet Content & Information</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">CEO</span>
-          <span class="stat-value">Sundar Pichai</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Founded</span>
-          <span class="stat-value">2015 (Alphabet) / 1998 (Google)</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Headquarters</span>
-          <span class="stat-value">Mountain View, CA</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Exchange</span>
-          <span class="stat-value">NASDAQ</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="segments">
-      <h2>Business Segments</h2>
-      <div class="segment-cards">
-        <div class="segment">
-          <h3>Google Services</h3>
-          <p>Search, Ads, YouTube, Android, Chrome, Hardware (Pixel, Nest), Google Maps, Play Store</p>
-        </div>
-        <div class="segment">
-          <h3>Google Cloud</h3>
-          <p>Google Cloud Platform (GCP), Google Workspace, enterprise AI and infrastructure services</p>
-        </div>
-        <div class="segment">
-          <h3>Other Bets</h3>
-          <p>Waymo (autonomous vehicles), Verily (life sciences), DeepMind (AI research), Wing (drone delivery)</p>
-        </div>
-      </div>
+    <section class="companies-grid" id="companiesGrid">
+      <!-- Companies will be dynamically inserted here -->
     </section>
   </main>
 
