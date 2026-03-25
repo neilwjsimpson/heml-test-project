@@ -1,41 +1,280 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track all 500+ constituents of the S&amp;P 500 index with real-time charts, sector analysis, and stock comparison tools.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
   <title>S&P 500 Stock Tracker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p>Loading S&P 500 data...</p>
+    </div>
+  </div>
+
+  <a class="skip-link" href="#companiesGrid">Skip to company grid</a>
+
+  <!-- Keyboard Shortcuts Modal -->
+  <div class="shortcuts-overlay" id="shortcutsOverlay" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts" aria-hidden="true">
+    <div class="shortcuts-modal">
+      <div class="shortcuts-header">
+        <h2>Keyboard Shortcuts</h2>
+        <button class="shortcuts-close" id="shortcutsClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="shortcuts-body">
+        <div class="shortcut-group">
+          <h3>Navigation</h3>
+          <div class="shortcut-row"><kbd>?</kbd><span>Toggle this panel</span></div>
+          <div class="shortcut-row"><kbd>/</kbd><span>Focus search</span></div>
+          <div class="shortcut-row"><kbd>Esc</kbd><span>Close modal / clear search</span></div>
+          <div class="shortcut-row"><kbd>&uarr; &darr; &larr; &rarr;</kbd><span>Navigate company grid</span></div>
+          <div class="shortcut-row"><kbd>Enter</kbd><span>Open selected company</span></div>
+        </div>
+        <div class="shortcut-group">
+          <h3>Dashboard</h3>
+          <div class="shortcut-row"><kbd>&larr; &rarr;</kbd><span>Previous / next company</span></div>
+          <div class="shortcut-row"><kbd>S</kbd><span>Toggle watchlist star</span></div>
+          <div class="shortcut-row"><kbd>C</kbd><span>Toggle comparison</span></div>
+          <div class="shortcut-row"><kbd>1 &ndash; 4</kbd><span>Switch tab</span></div>
+          <div class="shortcut-row"><kbd>Esc</kbd><span>Close dashboard</span></div>
+        </div>
+        <div class="shortcut-group">
+          <h3>General</h3>
+          <div class="shortcut-row"><kbd>T</kbd><span>Toggle dark / light theme</span></div>
+          <div class="shortcut-row"><kbd>W</kbd><span>Scroll to watchlist</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <header>
-    <h1>S&P 500 Stock Tracker</h1>
-    <p class="subtitle">Track all 500+ constituents of the S&P 500 index</p>
+    <div class="header-row">
+      <div>
+        <h1>S&P 500 Stock Tracker</h1>
+        <p class="subtitle">Track all 500+ constituents of the S&amp;P 500 index</p>
+      </div>
+      <div class="header-actions">
+        <div class="market-status" id="marketStatus"></div>
+        <button class="header-btn" id="shortcutsBtn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+      </div>
+    </div>
   </header>
 
+  <!-- Index Summary Ticker -->
+  <div class="index-ticker-bar" id="indexTickerBar"></div>
+
   <main>
-    <section class="controls">
-      <div class="search-container">
-        <input
-          type="text"
-          id="searchInput"
-          class="search-box"
-          placeholder="Search by company name or ticker symbol..."
-        >
+    <!-- Sector Visualizations -->
+    <section class="sector-viz">
+      <div class="sector-heatmap-wrap">
+        <h2>Sector Heatmap</h2>
+        <div class="sector-heatmap" id="sectorHeatmap"></div>
       </div>
-      <div class="filter-container">
-        <select id="sectorFilter" class="filter-select">
-          <option value="">All Sectors</option>
-        </select>
-      </div>
-      <div class="results-info">
-        <p id="resultsCount">Loading companies...</p>
+      <div class="sector-donut-wrap">
+        <h2>Sector Breakdown</h2>
+        <div class="sector-donut" id="sectorDonut"></div>
       </div>
     </section>
 
-    <section class="companies-grid" id="companiesGrid">
-      <!-- Companies will be dynamically inserted here -->
+    <!-- Market Movers -->
+    <section class="widget-section">
+      <h2>Market Movers</h2>
+      <div class="widget-container" id="marketMovers"></div>
     </section>
+
+    <!-- Watchlist -->
+    <section class="watchlist-section" id="watchlistSection" style="display:none">
+      <div class="section-header-row">
+        <h2>Your Watchlist <span class="watchlist-count" id="watchlistCount"></span></h2>
+        <span class="drag-hint" id="dragHint">Drag to reorder</span>
+      </div>
+      <div class="watchlist-grid" id="watchlistGrid"></div>
+    </section>
+
+    <!-- Portfolio Tracker -->
+    <section class="portfolio-section" id="portfolioSection" style="display:none">
+      <div class="section-header-row">
+        <h2>Portfolio Tracker</h2>
+        <button class="btn-ghost btn-sm" id="portfolioClearBtn">Clear All</button>
+      </div>
+      <div class="portfolio-content">
+        <div class="portfolio-list" id="portfolioList"></div>
+        <div class="portfolio-summary" id="portfolioSummary"></div>
+      </div>
+    </section>
+
+    <!-- Top Companies -->
+    <section class="top-section">
+      <h2>Top Companies by Market Cap</h2>
+      <div class="top-companies" id="topCompanies"></div>
+    </section>
+
+    <!-- Market News -->
+    <section class="widget-section">
+      <h2>Market News</h2>
+      <div class="widget-container widget-news" id="marketNews"></div>
+    </section>
+
+    <!-- Controls -->
+    <section class="controls">
+      <div class="section-header-row">
+        <h2>All S&P 500 Companies</h2>
+        <button class="btn-ghost btn-sm" id="toggleScreener">Advanced Filters &#9662;</button>
+      </div>
+      <div class="search-filter-row">
+        <input type="text" id="searchInput" class="search-box" placeholder="Search by company name or ticker symbol..." aria-label="Search companies">
+        <select id="sectorFilter" class="filter-select" aria-label="Filter by sector">
+          <option value="">All Sectors</option>
+        </select>
+        <select id="sortSelect" class="filter-select" aria-label="Sort companies">
+          <option value="default">Default Order</option>
+          <option value="symbol-asc">Symbol A-Z</option>
+          <option value="symbol-desc">Symbol Z-A</option>
+          <option value="name-asc">Name A-Z</option>
+          <option value="name-desc">Name Z-A</option>
+          <option value="sector">By Sector</option>
+          <option value="mcap-desc">Market Cap &#8595;</option>
+          <option value="mcap-asc">Market Cap &#8593;</option>
+        </select>
+        <button class="btn-secondary" id="exportCsv">Export CSV</button>
+      </div>
+      <!-- Advanced Screener -->
+      <div class="screener-panel" id="screenerPanel">
+        <div class="screener-fields">
+          <div class="screener-field">
+            <label for="mcapMin">Market Cap Min ($B)</label>
+            <input type="number" id="mcapMin" class="screener-input" placeholder="0" min="0">
+          </div>
+          <div class="screener-field">
+            <label for="mcapMax">Market Cap Max ($B)</label>
+            <input type="number" id="mcapMax" class="screener-input" placeholder="Any" min="0">
+          </div>
+          <div class="screener-field">
+            <label for="subIndustryFilter">Sub-Industry</label>
+            <select id="subIndustryFilter" class="filter-select">
+              <option value="">All Sub-Industries</option>
+            </select>
+          </div>
+          <div class="screener-field screener-actions">
+            <button class="btn-ghost btn-sm" id="resetScreener">Reset Filters</button>
+          </div>
+        </div>
+      </div>
+      <div class="results-info">
+        <p id="resultsCount" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- Companies Grid -->
+    <section class="companies-grid" id="companiesGrid" aria-label="Company list"></section>
+    <div class="lazy-sentinel" id="lazySentinel"></div>
   </main>
+
+  <!-- Compare Bar (floating bottom) -->
+  <div class="compare-bar" id="compareBar">
+    <div class="compare-bar-inner">
+      <span class="compare-label">Compare:</span>
+      <div class="compare-chips" id="compareChips"></div>
+      <button class="btn-primary btn-sm" id="compareGoBtn" disabled>View Chart</button>
+      <button class="btn-ghost btn-sm" id="compareClearBtn">Clear</button>
+    </div>
+  </div>
+
+  <!-- Company Dashboard Modal (Tabbed) -->
+  <div class="dashboard-overlay" id="dashboardOverlay" role="dialog" aria-modal="true" aria-label="Company dashboard">
+    <div class="dashboard-modal">
+      <div class="dashboard-header">
+        <div class="dashboard-title-row">
+          <div>
+            <h2 class="dashboard-symbol" id="dashSymbol"></h2>
+            <p class="dashboard-company-name" id="dashName"></p>
+          </div>
+          <div class="dashboard-header-actions">
+            <button class="dash-action-btn" id="dashStarBtn" aria-label="Toggle watchlist" title="Add to watchlist">&#9734;</button>
+            <button class="dash-action-btn dash-compare-btn" id="dashCompareBtn" title="Add to comparison">+ Compare</button>
+            <button class="dash-action-btn" id="dashNoteBtn" title="Add note">Note</button>
+            <button class="dash-action-btn" id="dashPortfolioBtn" title="Add to portfolio">+ Portfolio</button>
+            <button class="dashboard-close" id="dashClose" aria-label="Close dashboard">&times;</button>
+          </div>
+        </div>
+        <div class="dashboard-meta">
+          <span class="dashboard-sector" id="dashSector"></span>
+          <span class="dashboard-industry" id="dashIndustry"></span>
+          <span class="dashboard-mcap" id="dashMcap"></span>
+        </div>
+        <p class="dashboard-nav-hint">&#8592; &#8594; navigate &bull; S star &bull; C compare &bull; 1-4 switch tab</p>
+      </div>
+
+      <!-- Note Editor -->
+      <div class="dashboard-note" id="dashNote" style="display:none">
+        <textarea id="dashNoteText" placeholder="Add a note about this stock..." rows="2"></textarea>
+        <div class="note-actions">
+          <button class="btn-primary btn-sm" id="dashNoteSave">Save</button>
+          <button class="btn-ghost btn-sm" id="dashNoteCancel">Cancel</button>
+          <button class="btn-ghost btn-sm note-delete-btn" id="dashNoteDelete">Delete Note</button>
+        </div>
+      </div>
+
+      <div class="dashboard-symbol-info" id="dashSymbolInfo"></div>
+
+      <!-- Dashboard Tabs -->
+      <div class="dashboard-tabs" id="dashTabs">
+        <button class="dash-tab active" data-tab="chart">Chart</button>
+        <button class="dash-tab" data-tab="technicals">Technicals</button>
+        <button class="dash-tab" data-tab="fundamentals">Fundamentals</button>
+        <button class="dash-tab" data-tab="news">News</button>
+      </div>
+
+      <div class="dashboard-tab-content">
+        <div class="tab-pane active" id="tabChart">
+          <div class="dashboard-chart" id="dashChart"></div>
+        </div>
+        <div class="tab-pane" id="tabTechnicals">
+          <div class="detail-panel" id="dashTechnical"></div>
+        </div>
+        <div class="tab-pane" id="tabFundamentals">
+          <div class="detail-panel" id="dashFinancials"></div>
+        </div>
+        <div class="tab-pane" id="tabNews">
+          <div class="detail-panel detail-full" id="dashTimeline"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-picker">
+        <h3>Popular Companies</h3>
+        <div class="picker-strip" id="pickerStrip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Modal -->
+  <div class="dashboard-overlay" id="compareOverlay" role="dialog" aria-modal="true" aria-label="Stock comparison">
+    <div class="dashboard-modal">
+      <div class="dashboard-header">
+        <div class="dashboard-title-row">
+          <div>
+            <h2 class="dashboard-symbol">Stock Comparison</h2>
+            <p class="dashboard-company-name" id="compareSubtitle"></p>
+          </div>
+          <button class="dashboard-close" id="compareCloseBtn" aria-label="Close comparison">&times;</button>
+        </div>
+      </div>
+      <div class="compare-chart-area" id="compareChartArea"></div>
+    </div>
+  </div>
+
+  <!-- Scroll to Top -->
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Scroll to top">
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="5,13 10,7 15,13"/>
+    </svg>
+  </button>
 
   <footer>
     <p>Data provided by TradingView. For informational purposes only &mdash; not financial advice.</p>

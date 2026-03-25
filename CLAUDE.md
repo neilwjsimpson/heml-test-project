@@ -1,101 +1,29 @@
-# HEML Test Project
+# S&P 500 Stock Tracker
 
 ## Overview
 
-This is a test project for experimenting with HEML (HTML Email Markup Language).
+Single-page stock dashboard built with static HTML, CSS, and vanilla JavaScript.
+The app loads companies from `data/sp500.json` and renders market visualizations,
+filters, watchlists, portfolio inputs, comparison charts, and a company dashboard.
 
-## Development
+## Project Structure
 
-- Run `npm install` to install dependencies
-- Run `npm run build` to build email templates
-- Run `npm test` to run tests
+- `index.html` — App layout and modal/widget containers
+- `script.js` — State management, filtering, rendering, keyboard interactions, widgets
+- `style.css` — Theme, layout, cards, modal, widgets, responsive behavior
+- `data/sp500.json` — Company dataset (symbol, name, sector, sub-industry, market cap)
 
-## Conventions
+## Run Locally
 
-- Keep email templates in the `src/` directory
-- Use HEML syntax for all email templates
-- Test emails across major clients before merging
+Use any static file server from the project root, for example:
 
-## Examples
-
-### Basic HEML template
-
-```heml
-<heml>
-  <head>
-    <subject>Welcome!</subject>
-  </head>
-  <body>
-    <container>
-      <row>
-        <column>
-          <h1>Hello World</h1>
-          <p>Welcome to our service.</p>
-          <button href="https://example.com">Get Started</button>
-        </column>
-      </row>
-    </container>
-  </body>
-</heml>
+```bash
+python3 -m http.server 8000
 ```
 
-### Two-column layout
+Then open `http://localhost:8000`.
 
-```heml
-<heml>
-  <head>
-    <subject>Newsletter</subject>
-  </head>
-  <body>
-    <container>
-      <row>
-        <column large="6" small="12">
-          <h2>Left Column</h2>
-          <p>Content for the left side.</p>
-        </column>
-        <column large="6" small="12">
-          <h2>Right Column</h2>
-          <p>Content for the right side.</p>
-        </column>
-      </row>
-    </container>
-  </body>
-</heml>
-```
+## Notes
 
-### Styled button
-
-```heml
-<heml>
-  <head>
-    <subject>Action Required</subject>
-    <style>
-      button {
-        background-color: #2563eb;
-        border-radius: 6px;
-        padding: 12px 24px;
-      }
-    </style>
-  </head>
-  <body>
-    <container>
-      <row>
-        <column>
-          <p>Please confirm your email address.</p>
-          <button href="https://example.com/confirm">Confirm Email</button>
-        </column>
-      </row>
-    </container>
-  </body>
-</heml>
-```
-
-hello
-
-hello
-
-hello
-
-hello
-
-test
+- TradingView widgets are loaded client-side from `https://s3.tradingview.com`.
+- No build step or package manager setup is required for local development.
